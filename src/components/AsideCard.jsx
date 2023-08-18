@@ -1,5 +1,6 @@
 import { styled } from "styled-components";
 import bgMobile from "../assets/bg-mobile.png";
+import bgDesktop from "../assets/bg-desktop.png";
 import cardFront from "../assets/card-front.png";
 import cardBack from "../assets/card-back.png";
 import cardLogo from "../assets/card-logo.svg";
@@ -51,6 +52,23 @@ const Aside = styled.aside`
     width: 100%;
     min-width: 33.3rem;
   }
+
+  @media (min-width: 768px) {
+    background: url(${bgDesktop}) no-repeat;
+    height: 100vh;
+    width: 70%;
+    background-size: 60% 100%;
+  }
+
+  @media (min-width: 1100px) {
+    section {
+      max-width: 44.8rem;
+    }
+    h3,
+    h5 {
+      font-size: 1.6rem;
+    }
+  }
 `;
 const Front = styled.section`
   position: absolute;
@@ -72,6 +90,23 @@ const Front = styled.section`
     font-size: 1.8rem;
     letter-spacing: 0.4rem;
   }
+
+  @media (min-width: 768px) {
+    top: 14rem;
+    left: 6%;
+  }
+
+  @media (min-width: 1100px) {
+    padding: 3.2rem;
+    top: 12rem;
+    left: 2%;
+    p {
+      font-size: 2.4rem;
+    }
+    img {
+      width: 8.4rem;
+    }
+  }
 `;
 const Back = styled.section`
   position: absolute;
@@ -85,5 +120,21 @@ const Back = styled.section`
     position: absolute;
     right: 4.4rem;
     top: 7.9rem;
+  }
+
+  @media (min-width: 768px) {
+    top: 35rem;
+    left: 12%;
+  }
+
+  @media (min-width: 1100px) {
+    top: 38rem;
+    left: 20%;
+    height: 24.8rem;
+    p {
+      top: 10.6rem;
+      right: 5.8rem;
+      font-size: 2.2rem;
+    }
   }
 `;

@@ -6,6 +6,9 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     box-sizing: border-box;
     font-family: 'Space Grotesk', sans-serif;
+  }
+
+  *:not(input,button) {
     text-transform: uppercase;
   }
 
