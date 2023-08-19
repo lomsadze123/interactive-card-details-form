@@ -1,11 +1,9 @@
 import { styled } from "styled-components";
-import AsideCard from "./components/AsideCard";
 import FormComponent from "./components/FormComponent";
 
 function App() {
   return (
     <Body>
-      <AsideCard />
       <FormComponent />
     </Body>
   );

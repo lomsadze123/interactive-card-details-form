@@ -5,20 +5,31 @@ import cardFront from "../assets/card-front.png";
 import cardBack from "../assets/card-back.png";
 import cardLogo from "../assets/card-logo.svg";
 
-const AsideCard = () => {
+const AsideCard = ({ fullName, number, date }) => {
   return (
     <Aside>
       <main>
         <Back>
-          <p>000</p>
+          <p>{date.cvc === null || date.cvc === "" ? "000" : date.cvc}</p>
         </Back>
         <Front>
           <img src={cardLogo} alt="card logo" />
           <div>
-            <p>0000 0000 0000 0000</p>
+            <p>
+              {number === null || number === ""
+                ? "0000 0000 0000 0000"
+                : number}
+            </p>
             <article>
-              <h3>jane appleseed</h3>
-              <h5>00/00</h5>
+              <h3>
+                {fullName === null || fullName === ""
+                  ? "JANE APPLESEED"
+                  : fullName}
+              </h3>
+              <h5>
+                {date.mm === null || date.mm === "" ? "00" : date.mm}/
+                {date.yy === null || date.yy === "" ? "00" : date.yy}
+              </h5>
             </article>
           </div>
         </Front>

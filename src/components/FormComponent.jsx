@@ -1,15 +1,123 @@
+import { useState } from "react";
 import { styled } from "styled-components";
+import AsideCard from "./AsideCard";
+import Thanks from "./Thanks";
+import { useForm } from "react-hook-form";
 
 const FormComponent = () => {
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm();
+  const [fullName, setName] = useState("");
+  const [number, setNumber] = useState("");
+  const [active, setActive] = useState(true);
+  const [date, setDate] = useState({ mm: "", yy: "", cvc: "" });
+
+  const onSubmit = () => {
+    if (
+      number.length === 19 &&
+      date.mm <= 12 &&
+      date.yy.length <= 2 &&
+      date.cvc.length > 2 &&
+      date.cvc.length <= 4
+    ) {
+      setActive(!active);
+    }
+  };
+  const handleDate = (e) => {
+    const { id, value } = e.target;
+    setDate(() => ({
+      ...date,
+      [id]: value,
+    }));
+  };
+
   return (
-    <Form>
+    <>
+      <AsideCard fullName={fullName} number={number} date={date} />
+      {active ? (
+        <Card
+          handleSubmit={handleSubmit(onSubmit)}
+          setNumber={setNumber}
+          setName={setName}
+          handleDate={handleDate}
+          register={register}
+          errors={errors}
+          number={number}
+          fullName={fullName}
+          mm={date.mm}
+          yy={date.yy}
+          cvc={date.cvc}
+        />
+      ) : (
+        <Thanks />
+      )}
+    </>
+  );
+};
+
+export default FormComponent;
+
+const Card = ({
+  handleSubmit,
+  setNumber,
+  setName,
+  handleDate,
+  register,
+  errors,
+  number,
+  fullName,
+  mm,
+  yy,
+  cvc,
+}) => {
+  return (
+    <Form onSubmit={handleSubmit}>
       <div>
-        <label htmlFor="">Cardholder Name</label> <br />
-        <input type="text" placeholder="e.g. Jane Appleseed" />
+        <label htmlFor="name">Cardholder Name</label> <br />
+        <Input
+          about={
+            errors.fullName?.type === "required" && !fullName.includes(" ")
+          }
+          type="text"
+          placeholder="e.g. Jane Appleseed"
+          id="name"
+          {...register("fullName", {
+            required: true,
+          })}
+          onChange={(e) => setName(e.target.value)}
+        />
+        {errors.fullName?.type === "required" && !fullName.includes(" ") ? (
+          <p>Enter valid name</p>
+        ) : null}
       </div>
       <div>
-        <label htmlFor="">Card Number</label> <br />
-        <input type="number" placeholder="e.g. 1234 5678 9123 0000" />
+        <label htmlFor="number">Card Number</label> <br />
+        <Input
+          about={
+            errors.number?.type === "required" ||
+            (number.length !== 19 && number !== "")
+          }
+          type="number"
+          placeholder="e.g. 1234 5678 9123 0000"
+          id="number"
+          {...register("number", {
+            required: true,
+          })}
+          onChange={(e) => {
+            const target = e.target.value;
+            if (target.length <= 16) {
+              const spacedNumber = target.replace(/(\d{4})(?=\d)/g, "$1 "); // add spaces after 4 digits
+              setNumber(spacedNumber);
+            }
+          }}
+        />
+        {errors.number?.type === "required" ||
+        (number.length !== 19 && number !== "") ? (
+          <p>Enter 16 digits</p>
+        ) : null}
       </div>
 
       <div>
@@ -17,13 +125,47 @@ const FormComponent = () => {
           <div className="small">
             <label htmlFor="mm">Exp. Date (MM/YY)</label> <br />
             <div>
-              <input type="number" id="mm" placeholder="MM" />
-              <input type="number" placeholder="YY" />
+              <div className="flex">
+                <Input
+                  about={errors.mm || mm > 12}
+                  type="number"
+                  id="mm"
+                  placeholder="MM"
+                  {...register("mm", { required: true })}
+                  onChange={handleDate}
+                />{" "}
+                {errors.mm || mm > 12 ? <p>Invalid mm</p> : null}
+              </div>
+              <div className="flex">
+                <Input
+                  about={errors.yy || yy.length >= 3}
+                  type="number"
+                  placeholder="YY"
+                  {...register("yy", { required: true })}
+                  onChange={handleDate}
+                  id="yy"
+                />
+                {errors.yy || yy.length >= 3 ? <p>Invalid yy</p> : null}
+              </div>
             </div>
           </div>
           <div>
             <label htmlFor="cvc">CVC</label> <br />
-            <input type="number" id="cvc" placeholder="e.g 123" />
+            <Input
+              about={
+                errors.cvc ||
+                ((cvc.length <= 2 || cvc.length > 4) && cvc !== "")
+              }
+              type="number"
+              id="cvc"
+              placeholder="e.g 123"
+              {...register("cvc", { required: true })}
+              onChange={handleDate}
+            />
+            {errors.cvc ||
+            ((cvc.length <= 2 || cvc.length > 4) && cvc !== "") ? (
+              <p>Enter valid CVC</p>
+            ) : null}
           </div>
         </div>
         <button>Confirm</button>
@@ -31,8 +173,6 @@ const FormComponent = () => {
     </Form>
   );
 };
-
-export default FormComponent;
 
 const Form = styled.form`
   padding: 0 3.2rem;
@@ -50,7 +190,6 @@ const Form = styled.form`
   input {
     width: 100%;
     padding: 1.3rem;
-    border: 0.1rem solid hsl(279, 6%, 55%);
     border-radius: 0.7rem;
     margin: 1.2rem 0;
     outline: 0;
@@ -87,6 +226,26 @@ const Form = styled.form`
     -webkit-appearance: none;
   }
 
+  p {
+    text-transform: none;
+    margin: -0.5rem 0 1rem 0;
+    color: hsl(0, 100%, 66%);
+    font-size: 1.3rem;
+    font-weight: 500;
+  }
+
+  .flex {
+    display: flex;
+    flex-direction: column;
+    gap: 0 !important;
+    input {
+      width: 100%;
+    }
+    p {
+      margin-top: -0.5rem;
+    }
+  }
+
   @media (min-width: 768px) {
     padding: 0 1.5rem 0 0;
     width: 70%;
@@ -100,4 +259,10 @@ const Form = styled.form`
       opacity: 0.9;
     }
   }
+`;
+const Input = styled.input`
+  border: ${(props) =>
+    props.about
+      ? "0.1rem solid hsl(0, 100%, 66%)"
+      : "0.1rem solid hsl(279, 6%, 55%)"};
 `;
